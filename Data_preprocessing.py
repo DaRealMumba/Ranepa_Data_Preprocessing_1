@@ -262,6 +262,12 @@ if artefacts:
     dropped_data['количество детей']=dropped_data['количество детей'].replace(20,2) # скорее всего это были неправильно занесенные данные
     st.write(dropped_data['количество детей'].value_counts())
 
+categorical_features = st.checkbox('Обработка категориальных данных:')
+if categorical_features:
+  st.write("""
+  Попробуем несколько способов обработки категориальных данных. 
+  """)
+
 final = st.checkbox('Посмотрим на измененный датасет')
 if final:
   st.write("""
