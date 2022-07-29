@@ -2,8 +2,6 @@ from math import remainder
 from nbformat import write
 import streamlit as st
 import pandas as pd 
-import matplotlib.pyplot as plt #Отрисовка графиков
-import seaborn as sns
 import numpy as np 
 from PIL import Image
 from pymystem3 import Mystem
@@ -78,7 +76,7 @@ cols_info.markdown("""
 \n**возраст** - возраст клиента в годах
 \n**образование** - уровень образования клиента
 \n**education_id** - идентификатор уровня образования
-\n**сеемейный статус** - семейное положение
+\n**семейный статус** - семейное положение
 \n**family_status_id** - идентификатор семейного положения
 \n**пол** - пол клиента
 \n**тип занятости** - тип занятости
@@ -101,14 +99,14 @@ if st.checkbox('Показать Датасет'):
 if st.checkbox('Размер Датасета'):
   shape = st.radio(
     "Выбор данных",
-     ('Строки', 'Колонки'))
+     ('Строки', 'Столбцы'))
   if shape == 'Строки':
     st.write('Количество строк:', my_data.shape[0])
-  elif shape == 'Колонки':
-    st.write('Количество колонок:', my_data.shape[1])
+  elif shape == 'Столбцы':
+    st.write('Количество столбцов:', my_data.shape[1])
 
 if st.checkbox('Уникальные значения переменной'):
-  cols = st.multiselect('Выбрать колонку', 
+  cols = st.multiselect('Выбрать столбец', 
   my_data.columns.tolist())
   if cols:
     st.write(pd.DataFrame(my_data[cols].value_counts(), columns=['количество уникальных значений']))
@@ -125,7 +123,7 @@ if st.checkbox('Типы данных'):
 
   st.write(pd.DataFrame(my_data.dtypes.astype('str'), columns=['тип данных']))
 
-if st.checkbox('Описательная статистика по всем числовым колонкам'):
+if st.checkbox('Описательная статистика по всем числовым столбцам'):
   describe_expander_ = st.expander('Информация о данных, которые входят в описательную статистику')
   describe_expander_.info('''Count - сколько всего было записей 
   \nMean - средняя велечина 
@@ -145,7 +143,7 @@ if non_val:
 st.write("""
 **Задание к 1 блоку:**
 \n1. Какой номер у строки, в которой первым пропущено значение столбца "уровень дохода".
-\n2. Сколько неповторяющихся значений в столбце "образование"? А сколько останется, если мы приведем все данные к единому типа написания?
+\n2. Сколько неповторяющихся значений в столбце "образование"? А сколько останется, если мы приведем все данные к единому типу написания?
 \n3. На сколько категорий вы бы сгруппировали данные в столбце "цели кредита"? Перечислите названия групп (Здесь нет правильного ответа)
 \n4. Среди заемщиков больше мужчин или женщин? В ответе укажите точное число.
 \n5. Какой тип данных у столбца "уровень дохода"?
@@ -168,7 +166,7 @@ if drop_col:
 Для начала удалим столбец "Unnamed 0", так как он просто копирует индексы и не несет никакой информации.
 Столбец 'трудовой стаж' тоже кажется не очень информативным. Мы знаем, что в нем хранятся данные о трудовом стаже в днях. Однако, увидели, что там есть отрицательные значения.
 Также, если мы вспомним среднее количество рабочих дней и переведем это в количество лет, то у нас получится 175. Непонятно как обрабатывать эти данные. Удалим и этот столбец, чтобы он нам не мешал. """)
-  col = st.multiselect('Колонки',
+  col = st.multiselect('Столбцы',
   my_data.columns.tolist())
   drop = st.checkbox('Удалить')
   if drop:
@@ -209,7 +207,7 @@ if change_type:
   Мы уже отмечали, что у столбца "уровень дохода" тип float. Кажется, было бы удобней смотреть на зарплату в нормальном виде.
   Давайте заменим тип данных столбца "уровень дохода" на int64.
   """)
-  col = st.selectbox('Колонка', dropped_data.columns.tolist())
+  col = st.selectbox('Столбец', dropped_data.columns.tolist())
   typ = st.selectbox('Тип', dropped_data.dtypes.unique())
   dropped_data[col] = dropped_data[col].astype(typ)
   if st.checkbox('показать'):
@@ -218,8 +216,6 @@ if change_type:
 
 similar = st.checkbox('Шаг четвертый')
 if similar:
-  # dupl = dropped_data.duplicated().sum()
-  # st.write(dupl)
   st.write("""
   Мы с вами видели, что в столбце "образование" есть повторяющиеся значения, которые написаны по разному.
   В столбце "цель кредита" похожая ситуация. Давайте приведем наши данные к общему виду: в столбце "образование" приведем все значения к нижнему регистру, 
@@ -232,16 +228,6 @@ if similar:
     purpose_lem = dropped_data['цель кредита'].apply(lemmatization)
     dropped_data['цель кредита'] = purpose_lem
     st.write(dropped_data['цель кредита'].value_counts())
-
-  # st.write("Теперь проверим датасет на наличие дубликатов (полностью похожих друг на друга строк)")
-  # if st.checkbox('Сколько всего дубликатов'):
-  #   dupl = dropped_data.duplicated().sum()
-  #   st.write(f'Всего {dupl} дубликат')
-  # st.write('Удалим повторящиеся колонки')
-  # if st.checkbox('Сколько осталось дубликатов'):
-  #   dropped_data = dropped_data.drop_duplicates().reset_index(drop=True)
-  #   new_dupl = dropped_data.duplicated().sum()
-  #   st.write(f'Всего {new_dupl} дубликат')
 
 rm_duplicates = st.checkbox('Шаг пятый')
 if rm_duplicates:
@@ -262,16 +248,15 @@ if artefacts:
   if st.checkbox('Удалить артефакт из столбца "пол"'):
     dropped_data=dropped_data.drop(dropped_data[dropped_data['пол']=='XNA'].index)
     st.write(dropped_data['пол'].value_counts())
-    #st.write(pd.DataFrame(dropped_data['пол'].value_counts(), columns=['количество']))
+
   if st.checkbox('Удалить артефакт из столбца "возраст"'):
     dropped_data=dropped_data.drop(dropped_data[dropped_data['возраст']==0].index)
     st.write(dropped_data['возраст'].value_counts())
-    #st.write(pd.DataFrame(dropped_data['возраст'].value_counts(), columns = ['количество']))
+
   if st.checkbox('Заменить артефакты в столбце "количество детей"'):
     dropped_data['количество детей']=dropped_data['количество детей'].replace(-1,1)
     dropped_data['количество детей']=dropped_data['количество детей'].replace(20,2)
     st.write(dropped_data['количество детей'].value_counts())
-    #st.write(pd.DataFrame(dropped_data['количество детей'].value_counts(), columns=['колчество']))
 
 
 categorical_features = st.checkbox('Шаг седьмой')
@@ -284,8 +269,7 @@ if categorical_features:
   categorical.markdown('Категориальные признаки - те, которые не имеют численного представления. Могут иметь как 2 уникальных значения (бинарные признаки), так и более')
   change_binary = st.checkbox('Обработать столбец "пол"')
   if change_binary:
-    dropped_data.пол[dropped_data.пол == 'M'] = 0
-    dropped_data.пол[dropped_data.пол == 'F'] = 1
+    dropped_data.пол = dropped_data.пол.map(dict(F=1, M=0))
     st.write(dropped_data)
     st.write("""
     Что делать, если у нас больше, чем 2 уникальных значений признака? Можно попробовать применить **[быстрое кодирование (One hot encoding)](https://www.helenkapatsa.ru/bystroie-kodirovaniie/)**
@@ -298,18 +282,6 @@ if categorical_features:
       dropped_data = pd.get_dummies(dropped_data, columns=['образование'])
       st.write(" Обратите внимание, что сам столбец 'образование' исчез из нашего датасета, вместо него появились 5 новых в конце датасета")
       st.write(dropped_data)
-
-
-# final = st.checkbox('Посмотрим на измененный датасет')
-# if final:
-#   st.write("""
-# Мы сделали довольно много преобразований, почистили наши данные и избавились от ненужной информации. Самое время посмотреть на итоговую таблицу
-# """)
-#   #st.write(my_data.info())
-#   st.write(dropped_data)
-# st.write("""
-
-# """)
 
 expander = st.expander("Заключение:")
 expander.markdown("""
